@@ -1,6 +1,7 @@
 package com.media.library.mapper;
 
 import com.media.library.dto.BookDto;
+import com.media.library.dto.BookSummaryDto;
 import com.media.library.model.Book;
 import org.springframework.stereotype.Service;
 
@@ -17,4 +18,9 @@ public class BookMapper {
             book.getReview()
         );
     }
+
+    public BookSummaryDto toSummaryDto(String reference, String summary){
+        return new BookSummaryDto(reference, summary);
+    }
+
 }

@@ -7,7 +7,6 @@ import com.media.library.repository.BookRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -33,7 +32,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public String getBookSummary(String bookReference) throws BookNotFoundException {
-        return null;
+        var book = retrieveBook(bookReference);
+
+        var sanitisedReview = sanitiseReview(book.getReview());
+
+        return "[" + book.getReference() + "] " +
+                book.getTitle() + " - " +
+                sanitisedReview;
+
+
     }
 
     private Optional<String> sanitiseBookReference(String bookReference) {
@@ -42,4 +49,15 @@ public class BookServiceImpl implements BookService {
 
         return Optional.ofNullable(match);
     }
+
+    private String sanitiseReview(String text) {
+
+        var truncatedText = text.replaceAll(TRUNCATE_PATTERN, "$1");
+
+        return truncatedText.split(" ").length == MAX_NUMBER_OF_WORDS_IN_REVIEW ?
+                truncatedText + "..." : truncatedText;
+    }
+
+    private static final int MAX_NUMBER_OF_WORDS_IN_REVIEW = 9;
+    private static final String TRUNCATE_PATTERN = String.format("^((?:\\W*[\\w|.+]+){%s}).*$", MAX_NUMBER_OF_WORDS_IN_REVIEW);
 }
